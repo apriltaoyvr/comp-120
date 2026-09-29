@@ -1,2 +1,3 @@
-# comp-120
-Repo for my homework
+# COMP 120 Submissions
+
+A repository for storing my project submissons for COMP 120.
