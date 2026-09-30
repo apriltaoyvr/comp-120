@@ -1,5 +1,6 @@
 #include <stdbool.h>
 
+// Struct
 const int NUM_WINNING_WAYS = 8;
 
 struct winning_way {
@@ -23,4 +24,57 @@ bool check_winning(char *board, char player) {
     return true;
 next_way:
   }
+}
+
+// Check win states for variable sized grids
+bool check_winning_scalable(const char *board, char player, int row_size, int col_size) {
+  int x;
+  int y;
+  bool win;
+
+  // Horizontal
+  for (y = 0; y < col_size; ++y) {
+    win = true;
+    for (x = 0; x < row_size; ++x) {
+      if (board[y * row_size + x] != player) {
+        win = false;
+        break;
+      }
+    }
+    if (win) return true;
+  }
+
+  // Vertical
+  for (x = 0; x < row_size; ++x) {
+    win = true;
+    for (y = 0; y < col_size; ++y) {
+      if (board[y * row_size + x] != player) {
+        win = false;
+        break;
+      }
+    }
+    if (win) return true;
+  }
+
+  // Diagonal
+  win = true;
+  for (x = 0; x < row_size; ++x) {
+    if (board[x * row_size + x] != player) {
+      win = false;
+      break;
+    }
+  }
+  if (win) return true;
+
+  win = true;
+  for (y = 0; y < col_size; ++y) {
+    x = row_size - 1 - y;
+    if (board[y * row_size + x] != player) {
+      win = false;
+      break;
+    }
+  }
+  if (win) return true;
+
+  return false;
 }
