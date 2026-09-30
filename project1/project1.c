@@ -2,37 +2,41 @@
 #include <stdbool.h>
 #include <string.h>
 
-void print_board(char board_state[9])
+void print_board(char *board)
 {
   int i;
   int j;
+  char c[9];
 
   for (i = 0; i < 9; ++i)
   {
-    char square = board_state[i];
-    int offset = i + 1;
-
-    if (board_state[i] == ' ') {
-      printf(" %d ", i);
-    } else {
-      printf(" %c ", board_state[i]);
-    }
-
-    if (offset % 3 == 0 && offset != 9)
-    {
-      printf("\n");
-      printf("---+---+---\n");
-    }
+    if (board[i] == ' ')
+      c[i] = '0' + i;
     else
+      c[i] = board[i];
+  }
+
+  for (i = 0; i < 9; ++i)
+  {
+    putchar(' ');
+    putchar(c[i]);
+    putchar(' ');
+
+    if (i != 8)
     {
-      printf("|");
+      if (i % 3 == 2)
+        printf("\n---+---+---\n");
+      else
+        putchar('|');
     }
   }
+
+  putchar('\n');
 }
 
 int main(void)
 {
-  char board[9] = "   x     ";
+  char board[] = {' ', ' ', ' ', 'x', ' ', ' ', ' ', ' ', ' '};
   bool player_turn = true;
 
   print_board(board);
