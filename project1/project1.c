@@ -50,13 +50,13 @@ bool in_winstate(char* board, char player) {
   int i;
 
   // Horizontal
-  for (i = 0; i < 8; i += 3) {
+  for (i = 0; i < 9; i += 3) {
     if (board[i] == player && board[i + 1] == player && board[i + 2] == player)
       return true;
   }
 
   // Vertical
-  for (i = 0; i < 8; ++i) {
+  for (i = 0; i < 3; ++i) {
     if (board[i] == player && board[i + 3] == player && board[i + 6] == player)
       return true;
   }
