@@ -74,25 +74,29 @@ bool in_winstate(char* board, char player) {
 }
 
 bool is_valid_move(int input, char* board) {
-  return input >= 0 && input < 9 && board[input] == ' ';
+  return input >= 0 && input <= 8 && board[input] == ' ';
 }
 
 void get_player_move(char* board) {
-  int input;
+  int number;
+  char input[100];
 
-  while (true) {
-    printf("Your turn (O). Please select a square (0-8): ");
-    if (scanf("%d", &input) != 1) {
-      printf("Invalid input. Please enter a number from 0 to 8.\n");
-      continue;
+  printf("Your turn (O). Please select a square (0-8): ");
+
+  while (fgets(input, sizeof(input), stdin)) {
+    if (sscanf(input, "%d", &number) == 1) {
+      number /= 1;
+
+      if (is_valid_move(number, board)) {
+        board[number] = 'O';
+        return;
+      } else {
+        printf("Please select an unoccupied square (0-8): ");
+      }
+
+    } else {
+      printf("Invalid input.\nPlease choose a number (0-8): ");
     }
-
-    if (is_valid_move(input, board)) {
-      board[input] = 'O';
-      return;
-    }
-
-    printf("Invalid move. Please select a valid square.\n");
   }
 }
 
