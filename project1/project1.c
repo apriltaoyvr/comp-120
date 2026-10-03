@@ -1,5 +1,6 @@
-#include <stdbool.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 
 // Board stuff
@@ -59,115 +60,99 @@ bool in_winstate(char* board, char player) {
 }
 
 bool is_valid_move(int input, char* board) {
-  bool valid_number = input >= 0 && input <= 8;
-  bool square_empty = board[input] == ' ';
-  return valid_number && board[input] == ' ';
+  return input >= 0 && input < 9 && board[input] == ' ';
 }
 
-void get_player_move(char* board, bool* player_move) {
+void get_player_move(char* board) {
   int input;
-  bool mark_placed = false;
 
-  while (!mark_placed) {
+  while (true) {
     printf("Your turn (O). Please select a square (0-8): ");
-    scanf("%d\n", &input);
+    if (scanf("%d", &input) != 1) {
+      printf("Invalid input. Please enter a number from 0 to 8.\n");
+      continue;
+    }
 
-    if (is_valid_move(input, &board)) {
-      board[input] = "O";
-      mark_placed = true;
+    if (is_valid_move(input, board)) {
+      board[input] = 'O';
+      return;
     }
 
     printf("Invalid move. Please select a valid square.\n");
   }
-
-  print_board(&board);
-  player_move = false;
 }
 
-void get_comp_move(char* board, bool* player_move) {
-  int move = rand() % (8 + 1 - 0);
-  bool mark_placed = false;
-
+void get_comp_move(char* board) {
+  int move;
   printf("Computer (X) is thinking...");
 
-  while (!mark_placed) {
+  do {
+    move = rand() % 9;
     if (is_valid_move(move, board)) {
-      board[move] = "X";
-      mark_placed = true;
+      board[move] = 'X';
       printf("Computer (X) chose square %d. Your move next!\n", move);
+      break;
     }
-  }
-
-  print_board(board);
-  player_move = true;
+  } while (true);
 }
 
-void play_again(bool still_want_to_play) {
+bool play_again(void) {
   char input;
-  bool valid_input;
 
   printf("Would you like to play again?\n");
 
-  do {
+  while (true) {
     printf("Press y to play again or q to quit.\n");
-    scanf("%d\n", &input);
+    if (scanf(" %c", &input) != 1) {
+      return false;
+    }
 
     if (input == 'y') {
-      valid_input = true;
-      still_want_to_play = true;
+      return true;
     } else if (input == 'q') {
-      valid_input = true;
-      still_want_to_play = false;
+      return false;
     } else {
       printf("Please enter a valid input.\n");
     }
-  } while (!valid_input);
+  }
 }
 
-void play_game(bool* still_want_to_play) {
-  int winner = NULL;  // 0 = player, 1 = comp, 2 = draw
+void play_game(void) {
   char board[] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
   bool player_turn = true;
   bool game_finished = false;
-  srand();
 
   printf("You are O and you go first. The computer is X.\n");
+  print_board(board);
 
-  do {
-    bool player_win = in_winstate(&board, "O");
-    bool comp_win = in_winstate(&board, "X");
-
-    if (strchr(board, ' ') == NULL || player_win || comp_win) {
-      game_finished = true;
-
-      if (player_win) {
-        winner = 0;
-        printf("Congratulations! You've won.\n");
-      } else if (comp_win) {
-        winner = 1;
-        printf("Computer wins!\n");
-      } else {
-        printf("It's a draw!\n");
-      }
-
-      play_again(still_want_to_play);
-    }
-
+  while (!game_finished) {
     if (player_turn) {
-      get_player_move(&board, player_turn);
+      get_player_move(board);
     } else {
-      get_comp_move(&board, player_turn);
+      get_comp_move(board);
     }
-  } while (!game_finished);
 
-  print_board(&board);
+    print_board(board);
+
+    if (in_winstate(board, player_turn ? 'O' : 'X')) {
+      printf(player_turn ? "Congratulations! You've won.\n" : "Computer wins!\n");
+      game_finished = true;
+    } else if (strchr(board, ' ') == NULL) {
+      printf("It's a draw!\n");
+      game_finished = true;
+    } else {
+      player_turn = !player_turn;
+    }
+  }
 }
 
 int main(void) {
-  bool still_want_to_play = true;
+  bool still_want_to_play;
+  srand(rand());
 
   do {
-    play_game(still_want_to_play);
+    play_game();
+    still_want_to_play = play_again();
   } while (still_want_to_play);
 
   printf("Thanks for playing!\n");
