@@ -19,9 +19,8 @@ void print_board(char* board) {
 
     if (current == ' ')
       new_square = '0' + i;
-    else {
+    else
       new_square = current;
-    }
 
     putchar(' ');
 
@@ -45,8 +44,8 @@ void print_board(char* board) {
   putchar('\n');
 }
 
-// Game state
-bool in_winstate(char* board, char player) {
+// Win state checks
+bool match_exists(char* board, char player) {
   int i;
 
   // Horizontal
@@ -73,6 +72,19 @@ bool in_winstate(char* board, char player) {
   return false;
 }
 
+bool is_game_finished(char* board, bool* player_turn) {
+  if (match_exists(board, player_turn ? 'O' : 'X')) {
+    printf(player_turn ? BLUE "Congratulations! You've won.\n" RESET : RED "Computer wins!\n" RESET);
+    return true;
+  } else if (strchr(board, ' ') == NULL) {
+    printf("It's a draw!\n");
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// Turn stuff
 bool is_valid_move(int input, char* board) {
   return input >= 0 && input <= 8 && board[input] == ' ';
 }
@@ -104,14 +116,15 @@ void get_comp_move(char* board) {
   int move;
   printf("Computer (X) is thinking...");
 
-  do {
+  while (true) {
     move = rand() % 9;
+    
     if (is_valid_move(move, board)) {
       board[move] = 'X';
       printf("Computer (X) chose square %d. Your move next!\n", move);
       break;
     }
-  } while (true);
+  }
 }
 
 // Main logic
@@ -122,17 +135,16 @@ bool play_again(void) {
 
   while (true) {
     printf("Press y to play again or q to quit.\n");
-    if (scanf(" %c", &input) != 1) {
-      return false;
-    }
 
-    if (input == 'y') {
-      return true;
-    } else if (input == 'q') {
+    if (scanf(" %c", &input) != 1)
       return false;
-    } else {
+
+    if (input == 'y')
+      return true;
+    else if (input == 'q')
+      return false;
+    else
       printf("Please enter a valid input.\n");
-    }
   }
 }
 
@@ -145,23 +157,12 @@ void play_game(void) {
   print_board(board);
 
   while (!game_finished) {
-    if (player_turn) {
-      get_player_move(board);
-    } else {
-      get_comp_move(board);
-    }
+    player_turn ? get_player_move(board) : get_comp_move(board);
+    player_turn = !player_turn;
 
     print_board(board);
 
-    if (in_winstate(board, player_turn ? 'O' : 'X')) {
-      printf(player_turn ? "Congratulations! You've won.\n" : "Computer wins!\n");
-      game_finished = true;
-    } else if (strchr(board, ' ') == NULL) {
-      printf("It's a draw!\n");
-      game_finished = true;
-    } else {
-      player_turn = !player_turn;
-    }
+    game_finished = is_game_finished(board, &game_finished);
   }
 }
 
