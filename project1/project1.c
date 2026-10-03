@@ -1,30 +1,44 @@
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Board stuff
+#define RED "\033[31m"
+#define BLUE "\033[34m"
+#define DIM "\033[90m"
+#define RESET "\033[0m"
+
 void print_board(char* board) {
   int i;
   char c[9];
 
   for (i = 0; i < 9; ++i) {
-    if (board[i] == ' ')
-      c[i] = '0' + i;
-    else
-      c[i] = board[i];
-  }
+    const char current = board[i];
+    char new_square = c[i];
 
-  for (i = 0; i < 9; ++i) {
+    if (current == ' ')
+      new_square = '0' + i;
+    else {
+      new_square = current;
+    }
+
     putchar(' ');
-    putchar(c[i]);
+
+    if (current == 'O')
+      printf(BLUE "O" RESET);
+    else if (current == 'X')
+      printf(RED "X" RESET);
+    else
+      printf(RESET "%c" RESET, new_square);
+
     putchar(' ');
 
     if (i != 8) {
       if (i % 3 == 2)
-        printf("\n---+---+---\n");
+        printf(DIM "\n---+---+---\n" RESET);
       else
-        putchar('|');
+        printf(DIM "|" RESET);
     }
   }
 
@@ -96,6 +110,7 @@ void get_comp_move(char* board) {
   } while (true);
 }
 
+// Main logic
 bool play_again(void) {
   char input;
 
