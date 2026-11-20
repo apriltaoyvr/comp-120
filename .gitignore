@@ -1,5 +1,6 @@
-# Other
+# COMP 120
 lab**/
+!lab9/
 
 # C
 # Prerequisites
@@ -57,3 +58,6 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Other
+.DS_STORE
